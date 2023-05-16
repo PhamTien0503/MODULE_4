@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Facility</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+</head>
+<body>
+<div class="d-flex justify-content-center">
+    <form class="w-50 border border-2 border-dark p-3 rounded " th:object="${facilityDto}" th:action="@{/facility/update}"
+          method="post">
+        <div>
+            <p style="color: red" th:text="${mess}"></p>
+        </div>
+
+        <div class="mb-3" style="display: none">
+            <label for="customerId" class="form-label">Id</label>
+            <input type="number" class="form-control" id="customerId" th:field="*{facilityId}">
+        </div>
+
+        <div class="mb-3">
+            <label for="facilityName" class="form-label">facilityName</label>
+            <p style="color: red" th:if="${#fields.hasErrors('facilityName')}"
+               th:errors="*{facilityName}"></p>
+            <input type="text" class="form-control" id="facilityName" th:field="*{facilityName}">
+        </div>
+
+
+        <div class="mb-3">
+            <label for="facilityArea" class="form-label">facilityArea</label>
+            <p style="color: red" th:if="${#fields.hasErrors('facilityArea')}"
+               th:errors="*{facilityArea}"></p>
+            <input type="number" class="form-control" id="facilityArea" th:field="*{facilityArea}">
+        </div>
+
+        <div class="mb-3">
+            <label for="rentCost" class="form-label">rentCost</label>
+            <p style="color: red" th:if="${#fields.hasErrors('rentCost')}"
+               th:errors="*{rentCost}"></p>
+            <input type="number" class="form-control" id="rentCost" th:field="*{rentCost}">
+        </div>
+
+        <div class="mb-3"  id="maxPeople1">
+            <label for="maxPeople" class="form-label">maxPeople</label>
+            <p style="color: red" th:if="${#fields.hasErrors('maxPeople')}"
+               th:errors="*{maxPeople}"></p>
+            <input type="number" class="form-control" id="maxPeople" th:field="*{maxPeople}">
+        </div>
+
+        <div class="mb-3" id="standardRoom1">
+            <label for="standardRoom" class="form-label">standardRoom</label>
+            <p style="color: red" th:if="${#fields.hasErrors('standardRoom')}"
+               th:errors="*{standardRoom}"></p>
+            <input type="text" class="form-control" id="standardRoom" th:field="*{standardRoom}">
+        </div>
+
+        <div class="mb-3" id="descriptionOtherConvenience1">
+            <label for="descriptionOtherConvenience" class="form-label">descriptionOtherConvenience</label>
+            <p style="color: red" th:if="${#fields.hasErrors('descriptionOtherConvenience')}"
+               th:errors="*{descriptionOtherConvenience}"></p>
+            <input type="number" class="form-control" id="descriptionOtherConvenience"
+                   th:field="*{descriptionOtherConvenience}">
+        </div>
+
+        <div class="mb-3" id="poolArea1">
+            <label for="poolArea" class="form-label">poolArea</label>
+            <p style="color: red" th:if="${#fields.hasErrors('poolArea')}"
+               th:errors="*{poolArea}"></p>
+            <input type="number" class="form-control" id="poolArea" th:field="*{poolArea}">
+        </div>
+
+        <div class="mb-3" id="numberOfFloors1">
+            <label for="numberOfFloors" class="form-label">numberOfFloors</label>
+            <p style="color: red" th:if="${#fields.hasErrors('numberOfFloors')}"
+               th:errors="*{numberOfFloors}"></p>
+            <input type="number" class="form-control" id="numberOfFloors" th:field="*{numberOfFloors}">
+        </div>
+
+        <div class="mb-3" id="facilityFree1">
+            <label for="facilityFree" class="form-label">facilityFree</label>
+            <p style="color: red" th:if="${#fields.hasErrors('facilityFree')}"
+               th:errors="*{facilityFree}"></p>
+            <input type="text" class="form-control" id="facilityFree" th:field="*{facilityFree}">
+        </div>
+
+        <div id="facilityType1">
+            <label for="facilityType" class="form-label">Facility Type</label>
+            <p style="color: red" th:if="${#fields.hasErrors('facilityType')}"
+               th:errors="*{facilityType}"></p>
+            <select class="form-select" aria-label="Default select example" id="facilityType"
+                    th:field="*{facilityType}">
+                <option th:each="c:${facilityTypeList}" th:text="${c.getFacilityTypeName()}"
+                        th:value="${c.getFacilityTypeId()}"></option>
+            </select>
+        </div>
+
+        <div id="rentType1">
+            <label for="rentType" class="form-label">Rent Type</label>
+            <p style="color: red" th:if="${#fields.hasErrors('rentType')}"
+               th:errors="*{rentType}"></p>
+            <select class="form-select" aria-label="Default select example" id="rentType"
+                    th:field="*{rentType}">
+                <option th:each="c:${rentTypeList}" th:text="${c.getRentTypeName()}"
+                        th:value="${c.getRentTypeId()}"></option>
+            </select>
+        </div>
+
+        <div>
+            <button class="btn btn-outline-success" type="submit">Update</button>
+        </div>
+    </form>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</html>

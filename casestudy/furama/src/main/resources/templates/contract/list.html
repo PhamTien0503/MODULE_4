@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<title>Danh sách hợp đồng</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div th:replace="~{customer/layout::header}"></div>
+<div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-info">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/employee">Employee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customer">Customer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/facility">Service</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="/contract">Contract</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+<h2 class="text-center fw-bold  my-3">DANH SÁCH HỢP ĐỒNG</h2>
+<div class="p-3">
+    <div class="justify-content-center d-flex">
+        <div class="alert alert-success alert-dismissible fade show w-50 text-center">
+            <strong th:text="${message}"></strong>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg py-0 my-2">
+        <div class="container-fluid">
+            <button class="btn btn-primary btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#addContract">
+                <span class="fa-solid fa-plus text-light h6 my-auto me-1"></span>
+                <span class="text-light"> Thêm mới hợp đồng</span>
+            </button>
+        </div>
+    </nav>
+    <table class="table table-striped">
+        <tr class="text-light">
+            <th class="text-center"></th>
+            <th>Dịch vụ</th>
+            <th>Tên nhân viên</th>
+            <th>Tên khách hàng</th>
+            <th>Ngày bắt đầu</th>
+            <th>Ngày kết thúc</th>
+            <th>Tiền đặt cọc</th>
+            <th>Tổng tiền</th>
+            <th class="text-center">Các dịch vụ đi kèm</th>
+        </tr>
+
+        <tr th:each="contract, status : ${contractList}">
+            <td class="text-center" th:text="${status.count}"></td>
+            <td th:text="${contract.facilityName}"></td>
+            <td th:text="${contract.employeeName}"></td>
+            <td th:text="${contract.customerName}"></td>
+            <td th:text="${contract.startDate}"></td>
+            <td th:text="${contract.endDate}"></td>
+            <td th:text="${'₫ ' + contract.deposit}"></td>
+            <td th:text="${'₫ ' + contract.totalMoney}"></td>
+            <td class="text-center">
+                <button th:attr="onclick=|addContractdetail('${contract.contractId}')|"
+                        class="btn btn-primary btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#addContractDetailplus">
+                    <span class="fa-solid fa-plus text-light h6 m-auto"></span>
+                </button>
+
+                <button class="btn btn-primary btn-outline-secondary btn-sm ms-3 px-3"
+                        th:attr="onclick=|showAttachDetail('${contract.contractId}')|" data-bs-toggle="modal"
+                        data-bs-target="#showAttachDetail">
+                    <span class="text-light m-auto">Danh sách dịch vụ đi kèm</span>
+                </button>
+            </td>
+        </tr>
+    </table>
+    <nav aria-label="..." class="justify-content-center d-flex">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" th:href="@{'/contract'(page=${contractList.number - 1})}"
+                   th:if="${contractList.hasPrevious()}">&laquo;</a>
+            </li>
+            <li class="page-item disabled" th:unless="${contractList.hasPrevious()}">
+                <a class="page-link">&laquo;</a>
+            </li>
+
+            <li class="page-item"><a class="page-link" th:href="@{'/contract'(page=${contractList.number - 1})}"
+                                     th:if="${contractList.hasPrevious()}" th:text="${contractList.number}"></a>
+            </li>
+
+            <li class="page-item active">
+                <a class="page-link" th:href="@{'/contract'(page=${contractList.number})}"
+                   th:text="${contractList.number + 1}"><span class="sr-only">(trang hiện tại)</span></a>
+            </li>
+
+            <li class="page-item"><a class="page-link" th:href="@{'/contract'(page=${contractList.number + 1})}"
+                                     th:if="${contractList.hasNext()}" th:text="${contractList.number + 2}"></a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" th:href="@{'/contract'(page=${contractList.number + 1})}"
+                   th:if="${contractList.hasNext()}">&raquo;</a>
+            </li>
+            <li class="page-item disabled" th:unless="${contractList.hasNext()}">
+                <a class="page-link">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div th:replace="~{customer/layout::footer}"></div>
+
+<div class="modal fade" id="addContract" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="border border-2 border-success p-3 rounded formCSS" th:action="@{/contract/add}"
+                  th:object="${contract}" method="POST">
+                <div class="modal-header">
+                    <h3 class="modal-title fw-bold text-primary" id="exampleModalLabel3">THÊM MỚI HỢP ĐỒNG</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="h6" for="facility">Tên dịch vụ:</label>
+                    <div class="input-group">
+                        <select id="facility" class="form-select" th:field="*{facility.facilityId}">
+                            <option th:each="item : ${facilityList}" th:value="${item.facilityId}"
+                                    th:text="${item.facilityName}"
+                            ></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="display: none">
+                    <label class="h6" for="cost">Giá dịch vụ:</label>
+                    <div class="input-group">
+                        <select id="cost" class="form-select">
+                            <option th:each="item : ${facilityList}" th:value="${item.getRentCost()}"
+                            ></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="h6" for="employee">Tên nhân viên:</label>
+                    <div class="input-group">
+                        <select id="employee" class="form-select" th:field="*{employee.employeeId}">
+                            <option th:each="item : ${employeeList}" th:value="${item.employeeId}"
+                                    th:text="${item.employeeName}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="h6" for="customer">Tên khách hàng:</label>
+                    <div class="input-group">
+                        <select id="customer" class="form-select" th:field="*{customer.customerId}">
+                            <option th:each="item : ${customerList}" th:value="${item.customerId}"
+                                    th:text="${item.customerName}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-3 form-group">
+                    <label for="startDate" class="h6">Ngày bắt đầu:</label>
+                    <input type="date" id="startDate" class="form-control" th:field="*{startDate}"/>
+                </div>
+
+                <div class="mt-3 form-group" id="endDateForm">
+                    <label for="endDate" class="h6">Ngày kết thúc:</label>
+                    <input type="date" id="endDate" class="form-control" th:field="*{endDate}"/>
+                </div>
+
+                <div class="mt-3 form-group">
+                    <label for="deposit" class="h6">Tiền đặt cọc (VNĐ):</label>
+                    <div class="input-group">
+                        <input type="number" id="deposit" class="form-control"
+                               placeholder="Nhập tiền đặt cọc..." th:field="*{deposit}"/>
+                    </div>
+
+                    <div><label for="attachFacilityList" class="h6">Dịch vụ đi kèm: </label>
+                        <div id="attachFacilityList"></div>
+                    </div>
+
+                    <div>
+                        <label for="contractDetail" class="h6">Thêm hợp đồng chi tiết</label>
+                        <span><button class="btn btn-primary btn-outline-secondary btn-sm" type="button"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#addContractDetail" id="contractDetail">
+                    <span class="fa-solid fa-plus text-light h6 my-auto me-1"></span>
+                </button></span>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-success">Lưu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addContractDetail" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="border border-2 border-success p-3 rounded formCSS">
+                <div class="modal-header">
+                    <h3 class="modal-title fw-bold text-primary" id="exampleModalLabel4">THÊM DỊCH VỤ ĐI KÈM</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label class="h6" for="attachFacility">Tên dịch vụ đi kèm:</label>
+                            <div class="input-group">
+                                <select id="attachFacility" class="form-select">
+                                    <option th:each="item : ${attachFacilityList}"
+                                            th:value="${item.getAttachFacilityId()}"
+                                            th:data-name="${item.attachFacilityName}"
+                                            th:text="${item.attachFacilityName + ' (₫ ' + item.attachFacilityCost + ')'}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 form-group">
+                            <label for="quantity" class="h6">Số lượng:</label>
+                            <div class="input-group">
+                                <input type="text" id="quantity" class="form-control"
+                                       placeholder="Nhập số lượng..."/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#addContract" onclick="addAttachFacility()">Lưu
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addContractDetailplus" tabindex="-1" aria-labelledby="exampleModalLabel1"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="border border-2 border-success p-3 rounded formCSS"
+                  th:action="@{/contract/addContractDetail}"
+                  th:object="${contractDetail}" method="POST">
+                <div class="modal-header">
+                    <h3 class="modal-title fw-bold text-primary" id="exampleModalLabel5">THÊM DỊCH VỤ ĐI KÈM</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" name="contractId" id="contractId" th:field="*{contract.contractId}"
+                               readonly/>
+
+                        <div class="form-group">
+                            <label class="h6" for="attachFacility">Tên dịch vụ đi kèm:</label>
+                            <div class="input-group">
+                                <select id="attachFacilityPlus" class="form-select"
+                                        th:field="*{attachFacility.attachFacilityId}">
+                                    <option th:each="item : ${attachFacilityList}" th:value="${item.attachFacilityId}"
+                                            th:text="${item.attachFacilityName + ' (₫ ' + item.attachFacilityCost + ')'}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 form-group">
+                            <label for="quantity" class="h6">Số lượng:</label>
+                            <div class="input-group">
+                                <input type="text" id="quantityPlus" class="form-control"
+                                       placeholder="Nhập số lượng..." th:field="*{quantity}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-success" value="delete">Lưu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="showAttachDetail" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content modalCSS">
+            <div class="modal-header">
+                <h4 class="modal-title text-center" id="exampleModalLabel2">DANH SÁCH DỊCH VỤ ĐI KÈM</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <table id="show"></table>
+
+                <div class="h5 text-danger text-center" id="note">
+                    Chưa có dịch vụ đi kèm trong hợp đồng!
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-success" value="delete">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let nameAttachFacilityList = new Array();
+    let idAttachFacilityList = new Array();
+    let quantityList = new Array();
+
+    function addAttachFacility() {
+        let attachFacilityId = document.getElementById('attachFacility').value;
+        let attachFacility = $("#attachFacility option:selected").data("name");
+        let quantity = parseInt(document.getElementById('quantity').value);
+
+        if (nameAttachFacilityList.includes(attachFacility)) {
+            let index = nameAttachFacilityList.indexOf(attachFacility);
+            quantityList[index] += quantity;
+        } else {
+            nameAttachFacilityList.push(attachFacility);
+            quantityList.push(quantity);
+            idAttachFacilityList.push(attachFacilityId);
+        }
+        showAttachFacilityList(nameAttachFacilityList, quantityList);
+    }
+
+    function showAttachFacilityList(nameAttachFacilityList, quantityList) {
+        let content = "";
+        content += '<table style="border-style: solid; color: red" class="table table-striped" >' + '<tr>';
+        for (let i = 0; i < nameAttachFacilityList.length; i++) {
+            content += '<td>' + nameAttachFacilityList[i] + '</td>';
+        }
+        content += '</tr>';
+        content += '<tr>';
+        for (let i = 0; i < quantityList.length; i++) {
+            content += '<td>' + quantityList[i] + '</td>';
+        }
+        content += '</tr>';
+        content += '</table><br>';
+        content += `<input  name="quantityList" value="${quantityList}" style="display: none">`
+        content += `<input  name="idAttachFacilityList" value="${idAttachFacilityList}" style="display: none">`
+        document.getElementById('attachFacilityList').innerHTML = content;
+    }
+
+    function showAttachDetail(id) {
+        $("#show").empty();
+        $("#note").show();
+        $.ajax({
+            url: "http://localhost:8080/api/contract/v1/" + id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data.length > 0) {
+                    $("#note").hide();
+                    let content = "";
+
+                    content += "<tr>";
+                    content += "<th>" + "Tên dịch vụ đi kèm" + "</th>";
+                    content += "<th class='px-5'>" + "Đơn vị" + "</th>";
+                    content += "<th class='text-center'>" + "Số lượng" + "</th>";
+                    content += "</tr>";
+
+                    for (let i = 0; i < data.length; i++) {
+                        content += "<tr>";
+                        content += "<td class='text-primary h6'>" + data[i].nameDto + "</td>";
+                        content += "<td class='text-primary px-5'>" + data[i].unitDto + "</td>";
+                        content += "<td class='text-primary text-center'>" + data[i].quantityDto + "</td>";
+                        content += "</tr>";
+                    }
+                    $("#show").html(content);
+                }
+            }
+        })
+    }
+
+    function addContractdetail(id) {
+        document.getElementById("contractId").value = id;
+    }
+
+
+</script>
+
+<script src="jquery/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous">
+</script>
+</body>
+</html>

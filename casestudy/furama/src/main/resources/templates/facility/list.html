@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List Customer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"></head>
+
+</head>
+<body>
+<div th:replace="~{customer/layout::header}"></div>
+<div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-info">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/employee">Employee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customer">Customer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/facility">Service</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="/contract" >Contract</a>
+                    </li>
+                </ul>
+                <form class="d-flex" action="/facility">
+                    <input class="form-control me-2" type="search" placeholder="Facility Name" aria-label="Search" th:name="nameSearch">
+                    <select  class="form-control me-2" type="search" aria-label="Search" th:name="idSearch">
+                       <option selected>Rent Type</option>
+                        <option th:each="c:${facilityTypeList}" th:text="${c.getFacilityTypeName()}"  th:value="${c.getFacilityTypeId()}"></option>
+                    </select>
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>
+<h1>List Facility</h1>
+<button type="button" class="btn btn-warning"><a th:href="@{/facility/create}">Add Facility</a></button>
+<h3 th:text="${mess}"></h3>
+<table class="table table-striped" id="tableCustomer">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Area</th>
+        <th scope="col">Cost</th>
+        <th scope="col">Max of people</th>
+        <th scope="col">Rent type</th>
+        <th scope="col">Facility type</th>
+        <th scope="col">Standard room</th>
+        <th scope="col">Description</th>
+        <th scope="col">Pool area</th>
+        <th scope="col">Number of floor</th>
+        <th scope="col">Facility Free</th>
+        <th scope="col">Edit</th>
+        <th scope="col">Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr th:each="facility: ${facilityList}" >
+            <td th:text="${facility.getFacilityId()}"></td>
+            <td th:text="${facility.getFacilityName()}"></td>
+            <td th:text="${facility.getFacilityArea()}"></td>
+            <td th:text="${facility.getRentCost()}"></td>
+            <td th:text="${facility.getMaxPeople()}"></td>
+            <td th:text="${facility.rentType.rentTypeName}"></td>
+            <td th:text="${facility.facilityType.facilityTypeName}"></td>
+            <td th:text="${facility.standardRoom}"></td>
+            <td th:text="${facility.descriptionOtherConvenience}"></td>
+            <td th:text="${facility.poolArea}"></td>
+            <td th:text="${facility.numberOfFloors}"></td>
+            <td th:text="${facility.facilityFree}"></td>
+
+            <td class="text-center">
+                <a th:href="@{/facility/edit/__${facility.facilityId}__}">
+                    <button class="btn btn-success btn-outline-secondary btn-sm">
+                        <span class="fa-solid fa-user-pen text-light h6 m-auto px-2">Edit</span>
+                    </button>
+                </a>
+            </td>
+            <td class="text-center">
+                <button th:attr="onclick=|deleteFacility('${facility.facilityId}', '${facility.facilityName}')|"
+                        class="btn btn-danger btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#deleteCustomer">
+                    <span class="fa-solid fa-person-circle-minus text-light h6 m-auto px-2">Delete</span>
+                </button>
+            </td>
+        </tr>
+    </c:forEach>
+    </tbody>
+</table>
+<div class="col-md-12 col-sm-12 " style="float: right;">
+    <a class="btn btn-primary"
+       th:href="@{facility(page=${facilityList.number - 1},nameSearch=${nameSearch},idSearch=${idSearch})}"
+       th:if="${facilityList.hasPrevious()}">Previous</a>
+    <span th:text="${facilityList.number +1}"></span>/<span th:text="${facilityList.totalPages}"></span>
+    <a class="btn btn-primary"
+       th:href="@{facility(page=${facilityList.number + 1 },nameSearch=${nameSearch},idSearch=${idSearch})}"
+       th:if="${facilityList.hasNext()}">Next</a>
+</div>
+</div>
+<div th:replace="~{customer/layout::footer}"></div>
+
+<div class="modal fade" id="deleteCustomer" tabindex="-1" aria-labelledby="exampleModalLabel1"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content modalCSS">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Do you want to delete</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/facility/delete}">
+                <div class="modal-body">
+                    <span class="h6">Facility:</span><strong id="nameDelete" class="text-danger ps-2"></strong>
+                    <input type="hidden" name="idDelete" id="idDelete" readonly/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger" value="delete">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function deleteFacility(id, name) {
+        document.getElementById("idDelete").value = id;
+        document.getElementById("nameDelete").innerText = name;
+        debugger
+    }
+</script>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script></html>
+</html>
